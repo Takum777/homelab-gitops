@@ -49,4 +49,14 @@ resource "proxmox_virtual_environment_vm" "template" {
     bridge = var.bridge
     model  = "virtio"
   }
+
+  agent {
+    enabled = true
+  }
+
+  serial_device {}
+
+  vga {
+    type = "serial0"
+  }
 }
