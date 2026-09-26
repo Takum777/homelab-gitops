@@ -15,6 +15,7 @@ concurrency:
 env:
   TF_VERSION: 1.16.4
   TFLINT_VERSION: v0.64.0
+  TRIVY_VERSION: v0.74.0
 
 jobs:
   fmt:
@@ -69,3 +70,18 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Run tflint
         run: tflint --recursive --config "$GITHUB_WORKSPACE/.tflint.hcl" --format compact
+
+  trivy:
+    name: trivy config scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Scan IaC misconfigurations
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: config
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          hide-progress: true
+          version: ${{ env.TRIVY_VERSION }}
