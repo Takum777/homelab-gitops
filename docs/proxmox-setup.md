@@ -65,3 +65,85 @@ pveum acl modify / --users terraform@pve --roles TerraformProv
 The role is granted on `/` and limited by its privilege list, not by path.
 Restricting it further to the pool and specific storages is listed in the
 project roadmap.
+
+## 2. API token
+
+```sh
+pveum user token add terraform@pve provider --privsep 0
+```
+
+Copy the `value` from the output: it is shown only once.
+
+`--privsep 0` means the token inherits the user's permissions. This is safe here
+because the user itself has nothing but the `TerraformProv` role.
+
+The token ID has the form `terraform@pve!provider`. Terraform reads it from the
+environment, never from files in git:
+
+```sh
+export PROXMOX_VE_ENDPOINT="https://<proxmox-host>:8006/"
+export PROXMOX_VE_API_TOKEN="terraform@pve!provider=<token-secret>"
+export PROXMOX_VE_INSECURE=true   # only for the default self-signed certificate
+```
+
+Revoke the token at any time with:
+
+```sh
+pveum user token remove terraform@pve provider
+```
+
+## 3. Resource pool
+
+All project VMs are placed into one pool. It groups them in the web UI and makes
+it obvious which resources are managed by Terraform.
+
+```sh
+pveum pool add homelab --comment "Managed by homelab-gitops"
+```
+
+## 4. VM ID range
+
+Proxmox does not enforce ID ranges, so the project uses a fixed convention.
+Terraform always sets IDs explicitly and never relies on auto-allocation.
+
+| Range | Purpose |
+| --- | --- |
+| `9000–9099` | VM templates |
+| `9100–9199` | k3s cluster nodes |
+
+Check that these IDs are free before the first `terraform apply`:
+
+```sh
+qm list | awk 'NR>1 && $1>=9000 && $1<9200'
+```
+
+## 5. Storage and network requirements
+
+- **Image storage.** A storage with the `import` content type enabled (Proxmox VE 8.4+),
+  used for downloaded cloud images. For `local`:
+  `pvesm set local --content iso,vztmpl,backup,import`
+- **Disk storage.** A storage for VM disks, for example `local-lvm`.
+- **Network.** A Linux bridge (usually `vmbr0`) and a block of static IP addresses
+  outside the DHCP range of your router, one per VM.
+
+The actual storage names, bridge and IP addresses are set in
+`terraform.tfvars`, which is not committed.
+
+## 6. Verify
+
+From your workstation:
+
+```sh
+curl -sk \
+  -H "Authorization: PVEAPIToken=terraform@pve!provider=<token-secret>" \
+  "https://<proxmox-host>:8006/api2/json/version"
+```
+
+A JSON response with the Proxmox version means the token works.
+A `401` means the token ID or secret is wrong.
+
+Check the effective permissions:
+
+```sh
+pveum user permissions terraform@pve
+```
