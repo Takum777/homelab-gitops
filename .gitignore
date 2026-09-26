@@ -1,0 +1,36 @@
+# --- Terraform ---
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+# Real values stay local, only examples are committed
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+# .terraform.lock.hcl is intentionally committed
+
+# --- Secrets and local config ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+kubeconfig
+*.kubeconfig
+age.key
+
+# --- Ansible ---
+*.retry
+ansible/inventory/hosts.yml
+
+# --- Editors / OS ---
+.idea/
+.vscode/
+*.swp
+.DS_Store
