@@ -20,7 +20,7 @@ ingress-nginx · cert-manager · Sealed Secrets · Prometheus · Grafana · Loki
 
 ## Roadmap
 
-- [ ] v0.1.0 — Repository skeleton, linters, CI, Proxmox access setup
+- [x] v0.1.0 — Repository skeleton, linters, CI, Proxmox access setup
 - [ ] v0.2.0 — Terraform modules: VM template and VM
 - [ ] v0.3.0 — Lab environment and remote state
 - [ ] v0.4.0 — k3s cluster via Ansible
