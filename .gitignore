@@ -13,7 +13,9 @@ override.tf.json
 *.tfvars
 *.tfvars.json
 !*.tfvars.example
-# .terraform.lock.hcl is intentionally committed
+# Lock files are committed for root configurations only,
+# reusable modules leave provider pinning to their callers
+terraform/modules/*/.terraform.lock.hcl
 
 # --- Secrets and local config ---
 .env
