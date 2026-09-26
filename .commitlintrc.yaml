@@ -1,0 +1,9 @@
+extends:
+  - "@commitlint/config-conventional"
+
+rules:
+  scope-enum:
+    - 2
+    - always
+    - [terraform, lab, backend, ansible, gitops, platform, apps, monitoring, adr, deps]
+  header-max-length: [2, always, 100]
