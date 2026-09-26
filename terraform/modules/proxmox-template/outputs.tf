@@ -15,5 +15,5 @@ output "node_name" {
 
 output "image_id" {
   description = "Datastore ID of the downloaded cloud image."
-  value       = proxmox_virtual_environment_download_file.image.id
+  value       = proxmox_download_file.image.id
 }
