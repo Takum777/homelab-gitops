@@ -1,0 +1,16 @@
+extends: default
+
+ignore: |
+  .terraform/
+  **/charts/*/templates/
+
+rules:
+  line-length:
+    max: 120
+    level: warning
+  document-start: disable
+  comments:
+    min-spaces-from-content: 1
+  truthy:
+    # GitHub Actions uses the bare `on:` key
+    check-keys: false
