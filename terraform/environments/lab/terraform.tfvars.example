@@ -1,0 +1,18 @@
+# Copy to terraform.tfvars and set real values. terraform.tfvars is not committed.
+
+node_name = "pve"
+# pool_id        = "homelab"
+# template_vm_id = 9000
+
+ipv4_gateway    = "192.0.2.1"
+dns_servers     = ["1.1.1.1", "1.0.0.1"]
+ssh_public_keys = ["ssh-ed25519 AAAA... user@host"]
+
+# One server and any number of agents. VM IDs from 9100-9199.
+# cpu_cores (default 2), memory in MiB (default 4096) and disk_size in GiB
+# (default 20) can be set per node.
+nodes = {
+  "k3s-server-01" = { vm_id = 9100, ipv4_address = "192.0.2.51/24", role = "server" }
+  "k3s-agent-01"  = { vm_id = 9101, ipv4_address = "192.0.2.52/24", role = "agent" }
+  "k3s-agent-02"  = { vm_id = 9102, ipv4_address = "192.0.2.53/24", role = "agent", memory = 3072 }
+}
