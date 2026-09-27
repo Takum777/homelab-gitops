@@ -12,8 +12,27 @@ resource "proxmox_virtual_environment_vm" "this" {
   stop_on_destroy = true
 
   clone {
-    vm_id = var.template_vm_id
-    full  = true
+    vm_id        = var.template_vm_id
+    datastore_id = var.disk_datastore_id
+    full         = true
+  }
+
+  cpu {
+    cores = var.cpu_cores
+    type  = var.cpu_type
+  }
+
+  memory {
+    dedicated = var.memory
+  }
+
+  disk {
+    datastore_id = var.disk_datastore_id
+    interface    = "scsi0"
+    size         = var.disk_size
+    discard      = "on"
+    iothread     = true
+    ssd          = true
   }
 
   # The template enables the agent, but the cloud image does not ship it.
