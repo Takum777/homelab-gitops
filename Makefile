@@ -18,3 +18,29 @@ hooks: ## Install pre-commit and commit-msg hooks
 .PHONY: lint
 lint: ## Run all pre-commit hooks on every file
 	pre-commit run --all-files
+
+##@ Terraform
+
+TF_ENV ?= lab
+TF_DIR := terraform/environments/$(TF_ENV)
+TF     := terraform -chdir=$(TF_DIR)
+
+.PHONY: check-env
+check-env:
+	@test -n "$$PROXMOX_VE_ENDPOINT" || { echo "PROXMOX_VE_* is not set, run: source ~/.homelab-gitops.env"; exit 1; }
+
+.PHONY: init
+init: ## Initialize Terraform in TF_ENV (default: lab)
+	$(TF) init
+
+.PHONY: plan
+plan: check-env ## Show planned changes for TF_ENV
+	$(TF) plan
+
+.PHONY: apply
+apply: check-env ## Apply changes to TF_ENV
+	$(TF) apply
+
+.PHONY: destroy
+destroy: check-env ## Destroy all resources in TF_ENV
+	$(TF) destroy
