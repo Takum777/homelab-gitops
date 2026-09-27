@@ -48,5 +48,10 @@ No modules.
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+| ---- | ----------- |
+| <a name="output_ipv4_address"></a> [ipv4\_address](#output\_ipv4\_address) | Static IPv4 address without the prefix length, ready for SSH or an Ansible inventory. |
+| <a name="output_mac_address"></a> [mac\_address](#output\_mac\_address) | MAC address of the network interface. |
+| <a name="output_name"></a> [name](#output\_name) | VM name and hostname. |
+| <a name="output_vm_id"></a> [vm\_id](#output\_vm\_id) | VM ID. |
 <!-- END_TF_DOCS -->
