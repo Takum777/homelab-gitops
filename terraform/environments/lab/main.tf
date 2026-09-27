@@ -19,3 +19,24 @@ module "template" {
   image_file_name = local.ubuntu_image.file_name
   image_checksum  = local.ubuntu_image.checksum
 }
+
+module "node" {
+  source   = "../../modules/proxmox-vm"
+  for_each = var.nodes
+
+  node_name      = var.node_name
+  vm_id          = each.value.vm_id
+  name           = each.key
+  template_vm_id = module.template.vm_id
+  pool_id        = var.pool_id
+  tags           = sort(["k3s", each.value.role, "terraform"])
+
+  cpu_cores = each.value.cpu_cores
+  memory    = each.value.memory
+  disk_size = each.value.disk_size
+
+  ipv4_address    = each.value.ipv4_address
+  ipv4_gateway    = var.ipv4_gateway
+  dns_servers     = var.dns_servers
+  ssh_public_keys = var.ssh_public_keys
+}
