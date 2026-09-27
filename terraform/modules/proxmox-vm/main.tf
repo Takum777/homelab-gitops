@@ -35,6 +35,29 @@ resource "proxmox_virtual_environment_vm" "this" {
     ssd          = true
   }
 
+  initialization {
+    datastore_id = var.disk_datastore_id
+
+    ip_config {
+      ipv4 {
+        address = var.ipv4_address
+        gateway = var.ipv4_gateway
+      }
+    }
+
+    dynamic "dns" {
+      for_each = length(var.dns_servers) > 0 ? [1] : []
+      content {
+        servers = var.dns_servers
+      }
+    }
+
+    user_account {
+      username = var.username
+      keys     = var.ssh_public_keys
+    }
+  }
+
   # The template enables the agent, but the cloud image does not ship it.
   # Without this override the provider waits up to 15 minutes for an IP.
   agent {

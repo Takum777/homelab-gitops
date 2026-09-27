@@ -26,8 +26,11 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
+| <a name="input_ipv4_address"></a> [ipv4\_address](#input\_ipv4\_address) | Static IPv4 address in CIDR notation, for example 192.0.2.10/24. | `string` | n/a | yes |
+| <a name="input_ipv4_gateway"></a> [ipv4\_gateway](#input\_ipv4\_gateway) | IPv4 default gateway. | `string` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | VM name. Cloud-init also uses it as the hostname. | `string` | n/a | yes |
 | <a name="input_node_name"></a> [node\_name](#input\_node\_name) | Proxmox node that runs the VM. | `string` | n/a | yes |
+| <a name="input_ssh_public_keys"></a> [ssh\_public\_keys](#input\_ssh\_public\_keys) | SSH public keys authorized for the default user. Password login stays disabled. | `list(string)` | n/a | yes |
 | <a name="input_template_vm_id"></a> [template\_vm\_id](#input\_template\_vm\_id) | VM ID of the template to clone, usually the vm\_id output of the proxmox-template module. | `number` | n/a | yes |
 | <a name="input_vm_id"></a> [vm\_id](#input\_vm\_id) | VM ID, from the 9100-9199 range reserved for cluster nodes. | `number` | n/a | yes |
 | <a name="input_bridge"></a> [bridge](#input\_bridge) | Linux bridge for the network interface. | `string` | `"vmbr0"` | no |
@@ -36,10 +39,12 @@ No modules.
 | <a name="input_description"></a> [description](#input\_description) | VM description shown in Proxmox. | `string` | `"Managed by Terraform (homelab-gitops)"` | no |
 | <a name="input_disk_datastore_id"></a> [disk\_datastore\_id](#input\_disk\_datastore\_id) | Datastore for the VM disk and the cloud-init drive. | `string` | `"local-lvm"` | no |
 | <a name="input_disk_size"></a> [disk\_size](#input\_disk\_size) | Disk size in GiB. Must not be smaller than the template disk. | `number` | `20` | no |
+| <a name="input_dns_servers"></a> [dns\_servers](#input\_dns\_servers) | DNS servers. Empty list keeps the Proxmox host settings. | `list(string)` | `[]` | no |
 | <a name="input_memory"></a> [memory](#input\_memory) | Memory in MiB, a multiple of 256. | `number` | `2048` | no |
 | <a name="input_on_boot"></a> [on\_boot](#input\_on\_boot) | Start the VM when the Proxmox node boots. | `bool` | `true` | no |
 | <a name="input_pool_id"></a> [pool\_id](#input\_pool\_id) | Resource pool for the VM. Null keeps it outside any pool. | `string` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags applied to the VM. | `list(string)` | <pre>[<br/>  "terraform"<br/>]</pre> | no |
+| <a name="input_username"></a> [username](#input\_username) | Default user created by cloud-init. | `string` | `"ubuntu"` | no |
 
 ## Outputs
 
