@@ -1,3 +1,16 @@
+# proxmox-vm
+
+Clones a VM from the `proxmox-template` template and configures it with
+cloud-init: default user with SSH keys, static IPv4 address and optional DNS.
+
+The QEMU guest agent is disabled on purpose: the cloud image does not include
+it, and it is installed later by Ansible. See
+[ADR 0001](../../../docs/adr/0001-install-guest-agent-with-ansible.md).
+
+## Usage
+
+See [examples/basic](examples/basic).
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
