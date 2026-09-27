@@ -66,6 +66,33 @@ The role is granted on `/` and limited by its privilege list, not by path.
 Restricting it further to the pool and specific storages is listed in the
 project roadmap.
 
+### Allow image cleanup on the image storage
+
+Deleting a downloaded cloud image is not covered by `TerraformProv`. Proxmox
+requires `Datastore.Allocate` on the storage to remove a volume that no VM owns,
+such as a file in `import` or `iso` content. Without it `terraform destroy`, or
+replacing the image with a newer release, fails with:
+
+```text
+Permission check failed (/storage/local, Datastore.Allocate)
+```
+
+`Datastore.Allocate` also allows changing the storage definition itself, so it
+is granted in a separate role and only on the image storage, not on `/`:
+
+```sh
+pveum role add TerraformImageCleanup --privs "Datastore.Allocate"
+pveum acl modify /storage/local --users terraform@pve --roles TerraformProv,TerraformImageCleanup
+```
+
+Both roles are assigned on `/storage/local` on purpose. In Proxmox an ACL entry
+on a more specific path replaces the permissions the same user inherits from a
+parent path. Assigning only `TerraformImageCleanup` there would drop
+`Datastore.AllocateSpace` and `Datastore.AllocateTemplate` on that storage and
+break image downloads.
+
+Use the name of your image storage instead of `local` if it differs.
+
 ## 2. API token
 
 ```sh
@@ -146,4 +173,11 @@ Check the effective permissions:
 
 ```sh
 pveum user permissions terraform@pve
+```
+
+On the image storage the list must include `Datastore.Allocate` together with
+`Datastore.AllocateSpace`, `Datastore.AllocateTemplate` and `Datastore.Audit`:
+
+```sh
+pveum user permissions terraform@pve --path /storage/local
 ```
