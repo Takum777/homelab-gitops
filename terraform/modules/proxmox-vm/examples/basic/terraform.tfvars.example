@@ -1,0 +1,4 @@
+node_name    = "pve"
+ipv4_address = "192.0.2.10/24"
+ipv4_gateway = "192.0.2.1"
+ssh_public_key = "ssh-ed25519 AAAA... user@host"
