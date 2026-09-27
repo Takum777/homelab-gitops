@@ -101,3 +101,44 @@ variable "disk_size" {
     error_message = "Disk size must be a whole number of at least 10 GiB (the template disk size)."
   }
 }
+variable "ipv4_address" {
+  description = "Static IPv4 address in CIDR notation, for example 192.0.2.10/24."
+  type        = string
+
+  validation {
+    condition     = can(regex("^(\\d{1,3}\\.){3}\\d{1,3}/\\d{1,2}$", var.ipv4_address)) && can(cidrhost(var.ipv4_address, 0))
+    error_message = "IPv4 address must be in CIDR notation, for example 192.0.2.10/24."
+  }
+}
+
+variable "ipv4_gateway" {
+  description = "IPv4 default gateway."
+  type        = string
+
+  validation {
+    condition     = can(regex("^(\\d{1,3}\\.){3}\\d{1,3}$", var.ipv4_gateway)) && can(cidrhost("${var.ipv4_gateway}/32", 0))
+    error_message = "Gateway must be a plain IPv4 address, for example 192.0.2.1."
+  }
+}
+
+variable "dns_servers" {
+  description = "DNS servers. Empty list keeps the Proxmox host settings."
+  type        = list(string)
+  default     = []
+}
+
+variable "username" {
+  description = "Default user created by cloud-init."
+  type        = string
+  default     = "ubuntu"
+}
+
+variable "ssh_public_keys" {
+  description = "SSH public keys authorized for the default user. Password login stays disabled."
+  type        = list(string)
+
+  validation {
+    condition     = length(var.ssh_public_keys) > 0 && alltrue([for k in var.ssh_public_keys : can(regex("^(ssh-(ed25519|rsa)|ecdsa-sha2-nistp\\d+) ", k))])
+    error_message = "Provide at least one SSH public key in OpenSSH format."
+  }
+}
