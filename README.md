@@ -9,7 +9,7 @@ ArgoCD (GitOps), with monitoring and secrets management.
 ## Stack
 
 Proxmox VE · Terraform (bpg/proxmox) · Ansible · k3s · ArgoCD · MetalLB ·
-ingress-nginx · cert-manager · Sealed Secrets · Prometheus · Grafana · Loki
+Gateway API · cert-manager · Sealed Secrets · Prometheus · Grafana · Loki
 
 ## Principles
 
