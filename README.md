@@ -22,7 +22,7 @@ ingress-nginx · cert-manager · Sealed Secrets · Prometheus · Grafana · Loki
 
 - [x] v0.1.0 — Repository skeleton, linters, CI, Proxmox access setup
 - [x] v0.2.0 — Terraform modules: VM template and VM
-- [ ] v0.3.0 — Lab environment and remote state
+- [x] v0.3.0 — Lab environment and remote state
 - [ ] v0.4.0 — k3s cluster via Ansible
 - [ ] v0.5.0 — ArgoCD with app-of-apps
 - [ ] v0.6.0 — Platform: MetalLB, ingress, cert-manager, secrets
