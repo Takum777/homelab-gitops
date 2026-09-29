@@ -42,3 +42,26 @@ API token with the `TerraformProv` role, without SSH access to the hypervisor.
   The module sets `stop_on_destroy` so destroys do not hang.
 - After Ansible installs the agent, enabling it on the VMs needs a revisit:
   the setting only takes effect after a VM restart.
+
+## Amendments
+
+### 2026-09-30: agent enabled without waiting for IPs
+
+bpg/proxmox 0.108.0 added `agent.wait_for_ip.disabled`. The `proxmox-vm`
+module now exposes `agent_enabled` (default `false`) and always sets
+`wait_for_ip.disabled = true`, because node IPs come from static inputs.
+
+The lab environment enables the agent from the moment a VM is created. A fresh
+`apply` no longer waits for an agent that is not installed yet, and the
+service starts on its own once the `common` role installs the package: the
+systemd unit is bound to the virtio-serial port that Proxmox adds when the
+agent is enabled.
+
+Consequences:
+
+- No two-phase apply: the agent setting is final from the first `apply`.
+- Until Ansible has run, graceful shutdown from Proxmox does not work;
+  `stop_on_destroy` still covers destroys.
+- After Ansible, Proxmox shows node IPs and shuts VMs down via the agent.
+- Enabling the agent on already running VMs took one reboot, which the
+  provider performed during `apply` (`reboot_after_update` defaults to `true`).
