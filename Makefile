@@ -56,3 +56,12 @@ backend-up: ## Start the SeaweedFS state backend and create the tfstate bucket
 .PHONY: inventory
 inventory: ## Generate Ansible inventory from terraform outputs
 	terraform -chdir=$(TF_DIR) output -json | python3 scripts/generate-inventory.py ansible/inventory/hosts.yml
+
+.PHONY: collections
+collections: ## Install Ansible collections from ansible/requirements.yml
+	ansible-galaxy collection install -r ansible/requirements.yml
+
+.PHONY: bootstrap
+bootstrap: inventory collections ## Configure nodes, install k3s and write ansible/kubeconfig
+	cd ansible && ansible-playbook site.yml
+	KUBECONFIG=ansible/kubeconfig kubectl get nodes -o wide
