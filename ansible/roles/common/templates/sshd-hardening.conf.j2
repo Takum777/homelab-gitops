@@ -1,0 +1,7 @@
+# Managed by Ansible (role common), do not edit.
+{% for key, value in common_sshd_settings.items() %}
+{{ key }} {{ value }}
+{% endfor %}
+{% if common_ssh_allow_users | length > 0 %}
+AllowUsers {{ common_ssh_allow_users | join(' ') }}
+{% endif %}
