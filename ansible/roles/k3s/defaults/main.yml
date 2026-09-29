@@ -8,6 +8,12 @@ k3s_install_script_url: "https://raw.githubusercontent.com/k3s-io/k3s/{{ k3s_ver
 
 k3s_api_port: 6443
 
+# Packaged components k3s must not deploy. MetalLB and ingress-nginx replace
+# them in v0.6.0.
+k3s_disable:
+  - traefik
+  - servicelb
+
 # Extra options merged into /etc/rancher/k3s/config.yaml on the server.
 k3s_server_config: {}
 
