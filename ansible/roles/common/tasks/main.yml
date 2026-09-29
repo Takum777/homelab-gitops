@@ -1,0 +1,23 @@
+---
+- name: Upgrade installed packages
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+    upgrade: safe
+
+- name: Install base packages
+  ansible.builtin.apt:
+    name: "{{ common_packages }}"
+    state: present
+
+- name: Check whether a reboot is required
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+  register: common_reboot_required
+
+- name: Reboot to finish package updates
+  ansible.builtin.reboot:
+    reboot_timeout: 600
+  when:
+    - common_reboot_if_required | bool
+    - common_reboot_required.stat.exists
