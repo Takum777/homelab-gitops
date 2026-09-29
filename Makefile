@@ -50,3 +50,9 @@ destroy: check-env ## Destroy all resources in TF_ENV
 .PHONY: backend-up
 backend-up: ## Start the SeaweedFS state backend and create the tfstate bucket
 	./backend/bootstrap.sh
+
+##@ Ansible
+
+.PHONY: inventory
+inventory: ## Generate Ansible inventory from terraform outputs
+	terraform -chdir=$(TF_DIR) output -json | python3 scripts/generate-inventory.py ansible/inventory/hosts.yml
