@@ -46,6 +46,16 @@
   loop_control:
     label: "{{ item.key }}"
 
+- name: Harden sshd configuration
+  ansible.builtin.template:
+    src: sshd-hardening.conf.j2
+    dest: "{{ common_sshd_dropin }}"
+    owner: root
+    group: root
+    mode: "0644"
+    validate: /usr/sbin/sshd -t -f %s
+  notify: Reload sshd
+
 - name: Check whether a reboot is required
   ansible.builtin.stat:
     path: /var/run/reboot-required
