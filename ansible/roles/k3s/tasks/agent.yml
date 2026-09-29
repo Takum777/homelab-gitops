@@ -1,0 +1,45 @@
+---
+# The token never leaves Ansible memory except in the agent config file,
+# which is readable by root only.
+- name: Read node token from the server
+  ansible.builtin.slurp:
+    src: "{{ k3s_token_file }}"
+  delegate_to: "{{ k3s_server_host }}"
+  run_once: true
+  register: k3s_node_token
+  no_log: true
+
+- name: Create k3s config directory
+  ansible.builtin.file:
+    path: "{{ k3s_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Write k3s agent config
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: "{{ k3s_config_dir }}/config.yaml"
+    owner: root
+    group: root
+    mode: "0600"
+  vars:
+    k3s_config: >-
+      {{ k3s_agent_config_base
+         | combine({'token': k3s_node_token.content | b64decode | trim})
+         | combine(k3s_agent_config) }}
+  notify: Restart k3s
+  no_log: true
+
+- name: Install k3s agent
+  ansible.builtin.include_tasks: install.yml
+  vars:
+    k3s_install_exec: agent
+
+- name: Wait for the agent node to become Ready
+  ansible.builtin.command: >-
+    k3s kubectl wait --for=condition=Ready
+    node/{{ inventory_hostname }} --timeout=180s
+  delegate_to: "{{ k3s_server_host }}"
+  changed_when: false
