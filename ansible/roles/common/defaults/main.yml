@@ -11,3 +11,13 @@ common_reboot_if_required: true
 # Install the QEMU guest agent (ADR 0001). The service starts on its own once
 # the agent is enabled on the VM in Proxmox and the VM is restarted.
 common_install_qemu_guest_agent: true
+
+# Kernel modules and sysctl settings required by Kubernetes networking.
+common_kernel_modules:
+  - overlay
+  - br_netfilter
+
+common_sysctl:
+  net.bridge.bridge-nf-call-iptables: 1
+  net.bridge.bridge-nf-call-ip6tables: 1
+  net.ipv4.ip_forward: 1
