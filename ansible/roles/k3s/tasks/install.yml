@@ -1,0 +1,37 @@
+---
+- name: Read installed k3s version
+  ansible.builtin.command: k3s --version
+  register: k3s_installed
+  changed_when: false
+  failed_when: false
+
+- name: Create directory for the k3s install script
+  ansible.builtin.file:
+    path: "{{ k3s_install_script | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Download k3s install script for {{ k3s_version }}
+  ansible.builtin.get_url:
+    url: "{{ k3s_install_script_url }}"
+    dest: "{{ k3s_install_script }}"
+    owner: root
+    group: root
+    mode: "0755"
+  register: k3s_script
+
+- name: Run k3s install script
+  ansible.builtin.command: "{{ k3s_install_script }}"
+  environment:
+    INSTALL_K3S_VERSION: "{{ k3s_version }}"
+    INSTALL_K3S_EXEC: "{{ k3s_install_exec }}"
+  when: k3s_version not in (k3s_installed.stdout | default(''))
+  changed_when: true
+
+- name: Ensure k3s service is running and enabled
+  ansible.builtin.service:
+    name: "{{ k3s_service_name }}"
+    state: started
+    enabled: true

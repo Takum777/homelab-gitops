@@ -1,0 +1,35 @@
+---
+- name: Create k3s config directory
+  ansible.builtin.file:
+    path: "{{ k3s_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Write k3s server config
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: "{{ k3s_config_dir }}/config.yaml"
+    owner: root
+    group: root
+    mode: "0600"
+  vars:
+    k3s_config: "{{ k3s_server_config_base | combine(k3s_server_config) }}"
+  notify: Restart k3s
+
+- name: Install k3s server
+  ansible.builtin.include_tasks: install.yml
+  vars:
+    k3s_install_exec: server
+
+- name: Wait for the server to write its node token
+  ansible.builtin.wait_for:
+    path: "{{ k3s_token_file }}"
+    timeout: 300
+
+- name: Wait for the Kubernetes API
+  ansible.builtin.wait_for:
+    host: "{{ ansible_host }}"
+    port: "{{ k3s_api_port }}"
+    timeout: 300

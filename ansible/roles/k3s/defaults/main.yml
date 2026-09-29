@@ -1,0 +1,12 @@
+---
+# Pinned k3s release. Channels: https://update.k3s.io/v1-release/channels
+k3s_version: v1.36.4+k3s1
+
+# The install script comes from the same tag as the binary, so one variable
+# pins both. The script verifies the binary checksum itself.
+k3s_install_script_url: "https://raw.githubusercontent.com/k3s-io/k3s/{{ k3s_version }}/install.sh"
+
+k3s_api_port: 6443
+
+# Extra options merged into /etc/rancher/k3s/config.yaml on the server.
+k3s_server_config: {}
