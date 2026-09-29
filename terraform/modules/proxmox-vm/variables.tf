@@ -47,6 +47,12 @@ variable "on_boot" {
   default     = true
 }
 
+variable "agent_enabled" {
+  description = "Enable the QEMU guest agent. The guest must have it installed (ADR 0001)."
+  type        = bool
+  default     = false
+}
+
 variable "template_vm_id" {
   description = "VM ID of the template to clone, usually the vm_id output of the proxmox-template module."
   type        = number

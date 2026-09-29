@@ -23,7 +23,7 @@ See [examples/basic](examples/basic).
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_proxmox"></a> [proxmox](#provider\_proxmox) | ~> 0.114 |
+| <a name="provider_proxmox"></a> [proxmox](#provider\_proxmox) | 0.114.0 |
 
 ## Modules
 
@@ -46,6 +46,7 @@ No modules.
 | <a name="input_ssh_public_keys"></a> [ssh\_public\_keys](#input\_ssh\_public\_keys) | SSH public keys authorized for the default user. Password login stays disabled. | `list(string)` | n/a | yes |
 | <a name="input_template_vm_id"></a> [template\_vm\_id](#input\_template\_vm\_id) | VM ID of the template to clone, usually the vm\_id output of the proxmox-template module. | `number` | n/a | yes |
 | <a name="input_vm_id"></a> [vm\_id](#input\_vm\_id) | VM ID, from the 9100-9199 range reserved for cluster nodes. | `number` | n/a | yes |
+| <a name="input_agent_enabled"></a> [agent\_enabled](#input\_agent\_enabled) | Enable the QEMU guest agent. The guest must have it installed (ADR 0001). | `bool` | `false` | no |
 | <a name="input_bridge"></a> [bridge](#input\_bridge) | Linux bridge for the network interface. | `string` | `"vmbr0"` | no |
 | <a name="input_cpu_cores"></a> [cpu\_cores](#input\_cpu\_cores) | Number of CPU cores. | `number` | `2` | no |
 | <a name="input_cpu_type"></a> [cpu\_type](#input\_cpu\_type) | Emulated CPU type. | `string` | `"x86-64-v2-AES"` | no |

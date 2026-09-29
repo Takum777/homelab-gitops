@@ -58,10 +58,14 @@ resource "proxmox_virtual_environment_vm" "this" {
     }
   }
 
-  # The template enables the agent, but the cloud image does not ship it.
-  # Without this override the provider waits up to 15 minutes for an IP.
+  # The cloud image does not ship the agent; the Ansible common role installs
+  # it (ADR 0001). IPs come from static inputs, so never wait for the agent.
   agent {
-    enabled = false
+    enabled = var.agent_enabled
+
+    wait_for_ip {
+      disabled = true
+    }
   }
 
   network_device {
