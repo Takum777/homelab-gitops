@@ -1,0 +1,12 @@
+---
+k3s_is_server: "{{ 'k3s_server' in group_names }}"
+k3s_service_name: "{{ 'k3s' if k3s_is_server else 'k3s-agent' }}"
+k3s_config_dir: /etc/rancher/k3s
+k3s_install_script: /usr/local/share/k3s/install.sh
+k3s_token_file: /var/lib/rancher/k3s/server/node-token
+
+k3s_server_config_base:
+  node-ip: "{{ ansible_host }}"
+  tls-san:
+    - "{{ ansible_host }}"
+  write-kubeconfig-mode: "0600"
