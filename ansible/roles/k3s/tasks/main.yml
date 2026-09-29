@@ -2,3 +2,7 @@
 - name: Configure k3s server
   ansible.builtin.include_tasks: server.yml
   when: k3s_is_server | bool
+
+- name: Join k3s agent to the server
+  ansible.builtin.include_tasks: agent.yml
+  when: not (k3s_is_server | bool)
