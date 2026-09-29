@@ -33,3 +33,6 @@
     host: "{{ ansible_host }}"
     port: "{{ k3s_api_port }}"
     timeout: 300
+
+- name: Fetch admin kubeconfig
+  ansible.builtin.include_tasks: kubeconfig.yml
