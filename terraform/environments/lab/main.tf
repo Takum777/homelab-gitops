@@ -30,6 +30,7 @@ module "node" {
   template_vm_id = module.template.vm_id
   pool_id        = var.pool_id
   tags           = sort(["k3s", each.value.role, "terraform"])
+  agent_enabled  = true
 
   cpu_cores = each.value.cpu_cores
   memory    = each.value.memory
