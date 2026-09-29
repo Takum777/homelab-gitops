@@ -36,3 +36,7 @@ ansible/inventory/hosts.yml
 .vscode/
 *.swp
 .DS_Store
+
+# --- State backend ---
+# Rendered from backend/s3.json.tpl with real keys
+backend/s3.json
