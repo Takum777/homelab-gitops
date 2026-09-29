@@ -10,6 +10,14 @@
     name: "{{ common_packages }}"
     state: present
 
+# The unit is bound to the virtio-serial port that Proxmox only adds when the
+# agent is enabled on the VM, so it is not started here. See ADR 0001.
+- name: Install QEMU guest agent
+  ansible.builtin.apt:
+    name: qemu-guest-agent
+    state: present
+  when: common_install_qemu_guest_agent | bool
+
 - name: Check whether a reboot is required
   ansible.builtin.stat:
     path: /var/run/reboot-required
