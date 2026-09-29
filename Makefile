@@ -44,3 +44,9 @@ apply: check-env ## Apply changes to TF_ENV
 .PHONY: destroy
 destroy: check-env ## Destroy all resources in TF_ENV
 	$(TF) destroy
+
+##@ State backend
+
+.PHONY: backend-up
+backend-up: ## Start the SeaweedFS state backend and create the tfstate bucket
+	./backend/bootstrap.sh
