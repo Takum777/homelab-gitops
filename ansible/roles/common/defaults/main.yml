@@ -1,0 +1,9 @@
+---
+# Packages installed on every node in addition to the cloud image defaults.
+common_packages:
+  - ca-certificates
+  - curl
+  - jq
+
+# Reboot a node when package updates leave /var/run/reboot-required behind.
+common_reboot_if_required: true
