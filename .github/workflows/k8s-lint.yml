@@ -16,6 +16,11 @@ concurrency:
 
 env:
   YAMLLINT_VERSION: 1.38.0
+  HELM_VERSION: v4.2.3
+  KUBECONFORM_VERSION: v0.8.0
+  # Keep in line with k3s_version in ansible/roles/k3s
+  K8S_VERSION: 1.36.4
+  CRD_CATALOG: https://raw.githubusercontent.com/datreeio/CRDs-catalog/main
 
 jobs:
   yamllint:
@@ -30,3 +35,52 @@ jobs:
         run: pip install "yamllint==${YAMLLINT_VERSION}"
       - name: Run yamllint
         run: yamllint --strict --format github -c .yamllint.yml .
+
+  kubeconform:
+    name: kubeconform
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        with:
+          version: ${{ env.HELM_VERSION }}
+      - name: Install kubeconform
+        run: |
+          set -euo pipefail
+          base="https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}"
+          cd "$RUNNER_TEMP"
+          curl -fsSLO "$base/kubeconform-linux-amd64.tar.gz"
+          curl -fsSLO "$base/CHECKSUMS"
+          sha256sum -c --ignore-missing CHECKSUMS
+          tar -xzf kubeconform-linux-amd64.tar.gz kubeconform
+          install -m 0755 kubeconform /usr/local/bin/kubeconform
+          kubeconform -v
+      - name: Validate plain manifests and rendered charts
+        shell: bash
+        run: |
+          set -euo pipefail
+          flags=(-strict -summary -output text
+            -kubernetes-version "$K8S_VERSION"
+            -schema-location default
+            -schema-location "$CRD_CATALOG/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json")
+
+          mapfile -t charts < <(./scripts/helm-deps.sh gitops)
+
+          plain=()
+          while IFS= read -r f; do
+            skip=false
+            for c in "${charts[@]}"; do
+              [[ "$f" == "$c"/* ]] && skip=true
+            done
+            "$skip" || plain+=("$f")
+          done < <(find gitops -name '*.yaml' | sort)
+
+          echo "::group::plain manifests"
+          kubeconform "${flags[@]}" "${plain[@]}"
+          echo "::endgroup::"
+
+          for c in "${charts[@]}"; do
+            echo "::group::$c"
+            helm template "$(basename "$c")" "$c" | kubeconform "${flags[@]}" -
+            echo "::endgroup::"
+          done
