@@ -1,0 +1,5 @@
+Argo CD is installed in namespace {{ .Release.Namespace }}.
+
+This release is bootstrapped once by make argocd. After that the argocd
+Application manages it from gitops/argocd/, so change the chart version
+or values in Git instead of running helm upgrade.
