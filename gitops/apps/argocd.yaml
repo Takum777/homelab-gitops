@@ -1,0 +1,33 @@
+# Argo CD manages its own installation from gitops/argocd/.
+# make argocd only bootstraps the first release, after that
+# chart upgrades and values changes go through Git.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  namespace: argocd
+  # No resources-finalizer: deleting this Application
+  # must never uninstall Argo CD itself
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Takum777/homelab-gitops.git
+    targetRevision: main
+    path: gitops/argocd
+    helm:
+      # Must match the release created by make argocd,
+      # otherwise resource names and selectors drift
+      releaseName: argocd
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      # A broken values change must not let Argo CD prune itself
+      prune: false
+      selfHeal: true
+    syncOptions:
+      # Argo CD CRDs exceed the client-side apply annotation size limit
+      - ServerSideApply=true
