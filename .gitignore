@@ -41,3 +41,7 @@ ansible/inventory/hosts.yml
 # Rendered from backend/s3.json.tpl with real keys
 backend/s3.json
 ansible/kubeconfig
+
+# --- GitOps ---
+# Chart dependencies are pulled by helm dependency build, Chart.lock is committed
+gitops/**/charts/

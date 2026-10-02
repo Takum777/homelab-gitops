@@ -1,0 +1,10 @@
+apiVersion: v2
+name: argocd
+description: Argo CD installation, bootstrapped by make argocd and then managed by Argo CD itself
+type: application
+version: 0.1.0
+dependencies:
+  # Single place where the Argo CD chart version is pinned
+  - name: argo-cd
+    version: 10.9.4
+    repository: https://argoproj.github.io/argo-helm
