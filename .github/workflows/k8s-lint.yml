@@ -20,6 +20,7 @@ env:
   KUBECONFORM_VERSION: v0.8.0
   # Keep in line with k3s_version in ansible/roles/k3s
   K8S_VERSION: 1.36.4
+  K8S_SCHEMAS: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master
   CRD_CATALOG: https://raw.githubusercontent.com/datreeio/CRDs-catalog/main
 
 jobs:
@@ -62,6 +63,8 @@ jobs:
           flags=(-strict -summary -output text
             -kubernetes-version "$K8S_VERSION"
             -schema-location default
+            # Standalone schemas do not ship apiextensions, CRDs fall back to the ref-based set
+            -schema-location "$K8S_SCHEMAS/{{.NormalizedKubernetesVersion}}/{{.ResourceKind}}{{.KindSuffix}}.json"
             -schema-location "$CRD_CATALOG/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json")
 
           mapfile -t charts < <(./scripts/helm-deps.sh gitops)
