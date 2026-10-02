@@ -65,3 +65,23 @@ collections: ## Install Ansible collections from ansible/requirements.yml
 bootstrap: inventory collections ## Configure nodes, install k3s and write ansible/kubeconfig
 	cd ansible && ansible-playbook site.yml
 	KUBECONFIG=ansible/kubeconfig kubectl get nodes -o wide
+
+##@ GitOps
+
+ARGOCD_NS    := argocd
+ARGOCD_CHART := gitops/argocd
+export KUBECONFIG ?= $(CURDIR)/ansible/kubeconfig
+
+.PHONY: argocd
+argocd: ## Install Argo CD once and hand control over to the root Application
+	helm repo add argo https://argoproj.github.io/argo-helm --force-update >/dev/null
+	helm dependency build $(ARGOCD_CHART)
+	@if helm status argocd -n $(ARGOCD_NS) >/dev/null 2>&1; then \
+		echo "argocd release exists, upgrades are managed by Argo CD from $(ARGOCD_CHART)/"; \
+	else \
+		helm install argocd $(ARGOCD_CHART) -n $(ARGOCD_NS) --create-namespace --wait --timeout 10m; \
+	fi
+	kubectl apply -f gitops/bootstrap/root.yaml
+	kubectl -n $(ARGOCD_NS) wait application/root --for=jsonpath='{.status.sync.status}'=Synced --timeout=5m
+	kubectl -n $(ARGOCD_NS) wait application/argocd --for=jsonpath='{.status.health.status}'=Healthy --timeout=5m
+	kubectl -n $(ARGOCD_NS) get applications
