@@ -1,0 +1,24 @@
+# Root of the app-of-apps tree. Applied once by make argocd,
+# after that every child Application lives in gitops/apps/.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+  # No resources-finalizer: deleting root must not cascade
+  # into every platform component it manages
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Takum777/homelab-gitops.git
+    targetRevision: main
+    path: gitops/apps
+    directory:
+      include: "*.yaml"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
