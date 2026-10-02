@@ -1,0 +1,10 @@
+# Values for the upstream argo-cd chart go under the dependency name.
+# Reference: helm show values argo/argo-cd --version <version from Chart.yaml>
+argo-cd:
+  # No SSO in the lab, the built-in admin account is enough
+  dex:
+    enabled: false
+
+  # Alerting goes through Alertmanager (v0.7.0), not Argo CD notifications
+  notifications:
+    enabled: false
